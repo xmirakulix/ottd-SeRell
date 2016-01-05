@@ -55,6 +55,7 @@
 #include "widgets/station_widget.h"
 
 #include "table/strings.h"
+#include "newgrf_townname.h"
 
 #include "safeguards.h"
 
@@ -129,15 +130,18 @@ typedef bool (*CMSAMatcher)(TileIndex tile);
 /**
  * Counts the numbers of tiles matching a specific type in the area around
  * @param tile the center tile of the 'count area'
+ * @param width the x size of area around
+ * @param height the y size of area around
+ * @param rad the radius to count around area
  * @param cmp the comparator/matcher (@see CMSAMatcher)
  * @return the number of matching tiles around
  */
-static int CountMapSquareAround(TileIndex tile, CMSAMatcher cmp)
+static int CountMapSquareAround(TileIndex tile, int width, int height, int rad, CMSAMatcher cmp)
 {
 	int num = 0;
 
-	for (int dx = -3; dx <= 3; dx++) {
-		for (int dy = -3; dy <= 3; dy++) {
+	for (int dx = -rad; dx <= (width-1) + rad; dx++) {
+		for (int dy = -rad; dy <= (height-1) + rad; dy++) {
 			TileIndex t = TileAddWrap(tile, dx, dy);
 			if (t != INVALID_TILE && cmp(t)) num++;
 		}
@@ -193,6 +197,11 @@ static bool CMSATree(TileIndex tile)
 	return IsTileType(tile, MP_TREES);
 }
 
+static bool CMSAIndustry(TileIndex tile)
+{
+	return IsTileType(tile, MP_INDUSTRY);
+}
+
 #define M(x) ((x) - STR_SV_STNAME)
 
 enum StationNaming {
@@ -234,7 +243,9 @@ static bool FindNearIndustryName(TileIndex tile, void *user_data)
 	return !sni->indtypes[indtype];
 }
 
-static StringID GenerateStationName(Station *st, TileIndex tile, StationNaming name_class)
+static bool IsUniqueStationName(const char*);
+
+static StringID GenerateStationName(Station *st, TileIndex tile, int width, int height, StationNaming name_class)
 {
 	static const uint32 _gen_station_name_bits[] = {
 		0,                                       // STATIONNAMING_RAIL
@@ -296,9 +307,56 @@ static StringID GenerateStationName(Station *st, TileIndex tile, StationNaming n
 	uint32 tmp = free_names & _gen_station_name_bits[name_class];
 	if (tmp != 0) return STR_SV_STNAME + FindFirstBit(tmp);
 
+	/* check industry >>variable names<< */
+	for (int dx = -3; dx <= (width-1) + 3; dx++) {
+		for (int dy = -3; dy <= (height-1) + 3; dy++) {
+			if (CMSAIndustry(TILE_MASK(tile + TileDiffXY(dx, dy)))) {
+				char buf[512];
+
+				// Get town name (code mostly stolen from FormatString)
+				const Industry *ind = Industry::GetByTile(tile + TileDiffXY(dx, dy));
+				const Town *ind_t = ind->town;
+				int64 temp[1];
+
+				temp[0] = ind_t->townnameparts;
+				StringParameters tmp_params(temp);
+				uint32 grfid = ind_t->townnamegrfid;
+
+				if (ind_t->name != NULL) {
+					strecpy(buf, ind_t->name, lastof(buf));
+				} else if (grfid == 0) {
+					/* Original town name */
+					GetStringWithArgs(buf, ind_t->townnametype, &tmp_params, lastof(buf));
+				} else {
+					/* Newgrf town name */
+					if (GetGRFTownName(grfid) != NULL) {
+						/* The grf is loaded */
+						GRFTownNameGenerate(buf, ind_t->townnamegrfid, ind_t->townnametype, ind_t->townnameparts, lastof(buf));
+					} else {
+						/* Fallback to english original */
+						GetStringWithArgs(buf, SPECSTR_TOWNNAME_ENGLISH, &tmp_params, lastof(buf));
+					}
+				}
+				// End of get town name
+
+				// Add space :P
+				strecat(buf, " ", lastof(buf));
+
+				// Add industry name
+				GetString(buf+strlen(buf), (GetIndustrySpec(ind->type))->name, lastof(buf));
+
+				if (IsUniqueStationName(buf)) {
+					free(st->name);
+					st->name = stredup(buf, lastof(buf));
+					return true;
+				}
+			}
+		}
+	}
+
 	/* check mine? */
 	if (HasBit(free_names, M(STR_SV_STNAME_MINES))) {
-		if (CountMapSquareAround(tile, CMSAMine) >= 2) {
+		if (CountMapSquareAround(tile, width, height, 3, CMSAMine) >= 2) {
 			return STR_SV_STNAME_MINES;
 		}
 	}
@@ -313,14 +371,14 @@ static StringID GenerateStationName(Station *st, TileIndex tile, StationNaming n
 	/* Check lakeside */
 	if (HasBit(free_names, M(STR_SV_STNAME_LAKESIDE)) &&
 			DistanceFromEdge(tile) < 20 &&
-			CountMapSquareAround(tile, CMSAWater) >= 5) {
+			CountMapSquareAround(tile, width, height, 3, CMSAWater) >= 5) {
 		return STR_SV_STNAME_LAKESIDE;
 	}
 
 	/* Check woods */
 	if (HasBit(free_names, M(STR_SV_STNAME_WOODS)) && (
-				CountMapSquareAround(tile, CMSATree) >= 8 ||
-				CountMapSquareAround(tile, IsTileForestIndustry) >= 2)
+				CountMapSquareAround(tile, width, height, 3, CMSATree) >= 8 ||
+				CountMapSquareAround(tile, width, height, 3, IsTileForestIndustry) >= 2)
 			) {
 		return _settings_game.game_creation.landscape == LT_TROPIC ? STR_SV_STNAME_FOREST : STR_SV_STNAME_WOODS;
 	}
@@ -689,7 +747,7 @@ static CommandCost BuildStationPart(Station **st, DoCommandFlag flags, bool reus
 			*st = new Station(area.tile);
 
 			(*st)->town = ClosestTownFromTile(area.tile, UINT_MAX);
-			(*st)->string_id = GenerateStationName(*st, area.tile, name_class);
+			(*st)->string_id = GenerateStationName(*st, area.tile, area.w, area.h, STATIONNAMING_RAIL);
 
 			if (Company::IsValidID(_current_company)) {
 				SetBit((*st)->town->have_ratings, _current_company);
@@ -4000,7 +4058,7 @@ void BuildOilRig(TileIndex tile)
 	Station *st = new Station(tile);
 	st->town = ClosestTownFromTile(tile, UINT_MAX);
 
-	st->string_id = GenerateStationName(st, tile, STATIONNAMING_OILRIG);
+	st->string_id = GenerateStationName(st, tile, 1, 1, STATIONNAMING_OILRIG);
 
 	assert(IsTileType(tile, MP_INDUSTRY));
 	DeleteAnimatedTile(tile);
