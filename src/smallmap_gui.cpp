@@ -277,6 +277,20 @@ static SmallMapColourScheme _heightmap_schemes[] = {
 };
 
 /**
+ * Colour Coding for Stuck Counter
+ */
+static const uint32 _stuck_counter_colours[] = {
+	MKCOLOUR(0xD0D0D0D0),
+	MKCOLOUR(0xCECECECE),
+	MKCOLOUR(0xBFBFBFBF),
+	MKCOLOUR(0xBDBDBDBD),
+	MKCOLOUR(0xBABABABA),
+	MKCOLOUR(0xB8B8B8B8),
+	MKCOLOUR(0xB6B6B6B6),
+	MKCOLOUR(0xB4B4B4B4),
+};
+
+/**
  * (Re)build the colour tables for the legends.
  */
 void BuildLandLegend()
@@ -498,13 +512,9 @@ static inline uint32 GetSmallMapRoutesPixels(TileIndex tile, TileType t)
 			default:              return MKCOLOUR_FFFF;
 		}
 	} else if (t == MP_RAILWAY) {
-		AndOr andor = {
-			MKCOLOUR_0XX0(GetRailTypeInfo(GetRailType(tile))->map_colour),
-			_smallmap_contours_andor[t].mand
-		};
-
-		const SmallMapColourScheme *cs = &_heightmap_schemes[_settings_client.gui.smallmap_land_colour];
-		return ApplyMask(cs->default_colour, &andor);
+		byte c = GetStuckCounter(tile);
+		if (c == 0) return 0;
+		return _stuck_counter_colours[(uint)c * lengthof(_stuck_counter_colours) / (MAX_UVALUE(byte) + 1)];
 	}
 
 	/* Ground colour */
