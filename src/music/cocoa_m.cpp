@@ -67,8 +67,9 @@ static void DoSetVolume()
 			 * but we need to get the type declaration right or
 			 * risk compilation errors. The header AudioComponent.h
 			 * was introduced in 10.6 so use it to decide which
-			 * type definition to use. */
-#ifdef __AUDIOCOMPONENT_H__
+			 * type definition to use. It's include guard changed
+			 * in 10.11, support both. */
+#if defined(__AUDIOCOMPONENT_H__) || defined(AudioUnit_AudioComponent_h)
 			AudioComponentDescription desc;
 #else
 			ComponentDescription desc;

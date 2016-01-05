@@ -110,12 +110,7 @@ static CGColorSpaceRef QZ_GetCorrectColorSpace()
 	static CGColorSpaceRef colorSpace = NULL;
 
 	if (colorSpace == NULL) {
-		CMProfileRef sysProfile;
-
-		if (CMGetSystemProfile(&sysProfile) == noErr) {
-			colorSpace = CGColorSpaceCreateWithPlatformColorSpace(sysProfile);
-			CMCloseProfile(sysProfile);
-		} else {
+		if (!(colorSpace = CGDisplayCopyColorSpace(CGMainDisplayID()))) {
 			colorSpace = CGColorSpaceCreateDeviceRGB();
 		}
 
