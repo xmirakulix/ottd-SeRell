@@ -200,7 +200,7 @@ STR_QUANTITY_GRAIN                                              :{WEIGHT_LONG} �
 STR_QUANTITY_WOOD                                               :{WEIGHT_LONG} drveta
 STR_QUANTITY_IRON_ORE                                           :{WEIGHT_LONG} željezne rude
 STR_QUANTITY_STEEL                                              :{WEIGHT_LONG} čelika
-STR_QUANTITY_VALUABLES                                          :{COMMA}{NBSP}vreć{P a e a} s vrijednosnicama
+STR_QUANTITY_VALUABLES                                          :{COMMA}{NBSP}vreć{P a e a} s dragocjenostima
 STR_QUANTITY_COPPER_ORE                                         :{WEIGHT_LONG} bakrene rude
 STR_QUANTITY_MAIZE                                              :{WEIGHT_LONG} kukuruza
 STR_QUANTITY_FRUIT                                              :{WEIGHT_LONG} voća
@@ -229,7 +229,7 @@ STR_ABBREV_PASSENGERS                                           :{TINY_FONT}PU
 STR_ABBREV_COAL                                                 :{TINY_FONT}UG
 STR_ABBREV_MAIL                                                 :{TINY_FONT}PT
 STR_ABBREV_OIL                                                  :{TINY_FONT}NF
-STR_ABBREV_LIVESTOCK                                            :{TINY_FONT}DŽ
+STR_ABBREV_LIVESTOCK                                            :{TINY_FONT}ST
 STR_ABBREV_GOODS                                                :{TINY_FONT}RB
 STR_ABBREV_GRAIN                                                :{TINY_FONT}ŽT
 STR_ABBREV_WOOD                                                 :{TINY_FONT}DV
@@ -242,7 +242,7 @@ STR_ABBREV_FRUIT                                                :{TINY_FONT}VĆ
 STR_ABBREV_DIAMONDS                                             :{TINY_FONT}DM
 STR_ABBREV_FOOD                                                 :{TINY_FONT}HN
 STR_ABBREV_PAPER                                                :{TINY_FONT}PR
-STR_ABBREV_GOLD                                                 :{TINY_FONT}AU
+STR_ABBREV_GOLD                                                 :{TINY_FONT}ZL
 STR_ABBREV_WATER                                                :{TINY_FONT}VO
 STR_ABBREV_WHEAT                                                :{TINY_FONT}PŠ
 STR_ABBREV_RUBBER                                               :{TINY_FONT}GM
@@ -1712,7 +1712,7 @@ STR_CONFIG_SETTING_DISTRIBUTION_PAX_HELPTEXT                    :"Simetrično" z
 STR_CONFIG_SETTING_DISTRIBUTION_MAIL                            :Način distribucije pošte: {STRING}
 STR_CONFIG_SETTING_DISTRIBUTION_MAIL_HELPTEXT                   :"Simetrično" znači da će se otprilike ista količina pošte slati od stanice A prema stanici B ako od B prema A. "Asimetrično" znači da će se proizvoljne količine pošte slati u oba smjera. "Ručno" znači da se distribucija neće vršiti automatski.
 STR_CONFIG_SETTING_DISTRIBUTION_ARMOURED                        :Način distribucije za OKLOPLJENU klasu tereta: {STRING}
-STR_CONFIG_SETTING_DISTRIBUTION_ARMOURED_HELPTEXT               :OKLOPLJENA klasa tereta sadrži vrijednosnice u umjerenoj klimi, dijamante u subtropskoj klimi ili zlato u subarktičkoj klimi. NewGFR-ovi bi mogli ovo izmijeniti. "Simetrično" znači da će se otprilike ista količina tereta slati od stanice A prema stanici B kao od B prema A. "Asimetrično" znači da će se proizvoljne količine tereta slati u oba smjera. "Ručno" znači da se distribucija tih tereta neće vršiti automatski. Preporučljivo je namjestiti ovu postavku na "asimetrično" ili "ručno" kod subarktičke klime jer banke neće slati zlato natrag prema rudnicima zlata. Za umjerenu i subtropsku klimu možete namjestiti i "simetrično" jer će banke slati neke vrijednosnice natrag prema izvorišnoj banci.
+STR_CONFIG_SETTING_DISTRIBUTION_ARMOURED_HELPTEXT               :OKLOPLJENA klasa tereta sadrži dragocjenosti u umjerenoj klimi, dijamante u subtropskoj klimi ili zlato u subarktičkoj klimi. NewGFR-ovi bi mogli ovo izmijeniti. "Simetrično" znači da će se otprilike ista količina tereta slati od stanice A prema stanici B kao od B prema A. "Asimetrično" znači da će se proizvoljne količine tereta slati u oba smjera. "Ručno" znači da se distribucija tih tereta neće vršiti automatski. Preporučljivo je namjestiti ovu postavku na "asimetrično" ili "ručno" kod subarktičke klime jer banke neće slati zlato natrag prema rudnicima zlata. Za umjerenu i subtropsku klimu možete namjestiti i "simetrično" jer će banke slati neke dragocjenosti natrag prema izvorišnoj banci.
 STR_CONFIG_SETTING_DISTRIBUTION_DEFAULT                         :Način distribucije za ostale klase tereta: {STRING}
 STR_CONFIG_SETTING_DISTRIBUTION_DEFAULT_HELPTEXT                :"Asimetrično" znači da će se proizvoljna količina tereta slati u bilo kojem smjeru. "Ručno" znači da neće biti nikakve automatske distribucije za te terete.
 STR_CONFIG_SETTING_LINKGRAPH_ACCURACY                           :Točnost distribucije: {STRING}
@@ -2783,7 +2783,7 @@ STR_LAI_OBJECT_DESCRIPTION_COMPANY_OWNED_LAND                   :Zemlja u posjed
 STR_ABOUT_OPENTTD                                               :{WHITE}O OpenTTD-u
 STR_ABOUT_ORIGINAL_COPYRIGHT                                    :{BLACK}Izvorno autorsko pravo {COPYRIGHT} 1995 Chris Sawyer, sva prava pridržana
 STR_ABOUT_VERSION                                               :{BLACK}OpenTTD verzija {REV}
-STR_ABOUT_COPYRIGHT_OPENTTD                                     :{BLACK}OpenTTD {COPYRIGHT} 2002-2015 OpenTTD tim
+STR_ABOUT_COPYRIGHT_OPENTTD                                     :{BLACK}OpenTTD {COPYRIGHT} 2002-2016 OpenTTD tim
 
 # Save/load game/scenario
 STR_SAVELOAD_SAVE_CAPTION                                       :{WHITE}Spremi igru
